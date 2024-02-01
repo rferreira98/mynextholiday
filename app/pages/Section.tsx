@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import COUNTRIES from "../countries.json";
 import countryData from "country-data";
+import { HolidayResponse } from "../../models/models";
 
 const Section = () => {
   const [options, setOptions] = useState(
@@ -17,7 +18,11 @@ const Section = () => {
   );
   const [code, setCode] = useState<string | null>(null);
   const [value, setValue] = useState<string | null>(null);
-  const [inputValue, setInputValue] = useState<string | undefined>(undefined);
+  const [inputValue, setInputValue] = useState<string | undefined>("");
+  const [nextMandatoryHoliday, setNextMandatoryHoliday] =
+    useState<HolidayResponse | null>(null);
+  const [nextOptionalHoliday, setNextOptionalHoliday] =
+    useState<HolidayResponse | null>(null);
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -36,7 +41,28 @@ const Section = () => {
       .catch();
   }, [options]);
 
-  const findHoliday = () => {};
+  const getFormattedDate = (date: Date): string =>
+    `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
+  const findHoliday = async () => {
+    const today = new Date();
+    const lastDay = new Date(today.getFullYear(), 11, 31);
+
+    const startDate = getFormattedDate(today);
+    const endDate = getFormattedDate(lastDay);
+    const response = await fetch(
+      `https://openholidaysapi.org/PublicHolidays?countryIsoCode=${code}&languageIsoCode=${code}&validFrom=${startDate}&validTo=${endDate}`
+    );
+    const nextHolidays: HolidayResponse[] = await response.json();
+    const nextMandatoryHoliday: HolidayResponse | undefined = nextHolidays.find(
+      (holiday) => holiday.quality === "Mandatory"
+    );
+    const nextOptionalHoliday: HolidayResponse | undefined = nextHolidays.find(
+      (holiday) => holiday.quality === "Optional"
+    );
+    if (nextMandatoryHoliday) setNextMandatoryHoliday(nextMandatoryHoliday);
+    if (nextOptionalHoliday) setNextMandatoryHoliday(nextOptionalHoliday);
+  };
 
   return (
     <Grid container gap={5}>
@@ -47,7 +73,9 @@ const Section = () => {
         justifyContent="center"
         alignItems="center"
       >
-        <Typography variant="h1">Find my next holiday</Typography>
+        <Typography variant="h1" textAlign="center">
+          Find my next holiday
+        </Typography>
       </Grid>
       <Grid
         item
@@ -96,6 +124,47 @@ const Section = () => {
           Find holiday
         </Button>
       </Grid>
+      {nextMandatoryHoliday && (
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography variant="h4">
+            {`${nextMandatoryHoliday.name[0].text} on ${nextMandatoryHoliday.startDate}`}
+          </Typography>
+        </Grid>
+      )}
+      {nextOptionalHoliday && (
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography variant="h3">Next optional holiday</Typography>
+          <Typography variant="h4">
+            {`${nextOptionalHoliday.name[0].text} on ${nextOptionalHoliday.startDate}`}
+          </Typography>
+        </Grid>
+      )}
+
+      {!nextMandatoryHoliday && !nextOptionalHoliday && (
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography variant="h4">
+            There&apos;s no more holidays this year.
+          </Typography>
+        </Grid>
+      )}
     </Grid>
   );
 };
