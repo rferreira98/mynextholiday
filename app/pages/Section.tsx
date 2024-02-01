@@ -13,9 +13,7 @@ import countryData from "country-data";
 import { HolidayResponse } from "../../models/models";
 
 const Section = () => {
-  const [options, setOptions] = useState(
-    Object.keys(COUNTRIES).flatMap((v) => v)
-  );
+  const [options] = useState(Object.keys(COUNTRIES).flatMap((v) => v));
   const [code, setCode] = useState<string | null>(null);
   const [value, setValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string | undefined>("");
@@ -61,7 +59,8 @@ const Section = () => {
       (holiday) => holiday.quality === "Optional"
     );
     if (nextMandatoryHoliday) setNextMandatoryHoliday(nextMandatoryHoliday);
-    if (nextOptionalHoliday) setNextMandatoryHoliday(nextOptionalHoliday);
+    if (nextOptionalHoliday) setNextOptionalHoliday(nextOptionalHoliday);
+    console.log(nextMandatoryHoliday, nextOptionalHoliday);
   };
 
   useEffect(() => {
@@ -139,8 +138,11 @@ const Section = () => {
           display="flex"
           justifyContent="center"
           alignItems="center"
+          flexDirection="column"
         >
-          <Typography variant="h3">Next optional holiday</Typography>
+          <Typography variant="h3" mb={5}>
+            Next optional holiday
+          </Typography>
           <Typography variant="h4">
             {`${nextOptionalHoliday.name[0].text} on ${nextOptionalHoliday.startDate}`}
           </Typography>
