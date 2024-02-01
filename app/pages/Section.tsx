@@ -64,6 +64,13 @@ const Section = () => {
     if (nextOptionalHoliday) setNextMandatoryHoliday(nextOptionalHoliday);
   };
 
+  useEffect(() => {
+    if (value === inputValue) {
+      findHoliday();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, inputValue]);
+
   return (
     <Grid container gap={5}>
       <Grid
@@ -89,7 +96,7 @@ const Section = () => {
           id="combo-box-demo"
           freeSolo
           value={value}
-          onChange={(event: any, newValue: string | null) => {
+          onChange={(_event: any, newValue: string | null) => {
             setValue(newValue);
           }}
           inputValue={inputValue}
@@ -111,18 +118,6 @@ const Section = () => {
             />
           )}
         />
-        <Button
-          variant="contained"
-          disabled={inputValue !== value}
-          sx={{
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            height: "100%",
-          }}
-          onClick={findHoliday}
-        >
-          Find holiday
-        </Button>
       </Grid>
       {nextMandatoryHoliday && (
         <Grid
