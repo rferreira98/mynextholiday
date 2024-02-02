@@ -25,7 +25,7 @@ const SearchInput = ({
   optionalHolidayHandler,
 }: SearchInputProps) => {
   const [code, setCode] = useState<string | null>(null);
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<string | null>("");
   const [inputValue, setInputValue] = useState<string | undefined>("");
   const [options] = useState(Object.keys(COUNTRIES).flatMap((v) => v));
   const theme = useTheme();
@@ -75,7 +75,7 @@ const SearchInput = ({
     const subdivisions: SubdivisionResponse[] =
       await subdivisionsResponse.json();
 
-    if (nextMandatoryHoliday) {
+    if (nextMandatoryHoliday && mandatoryHolidayHandler) {
       if (nextMandatoryHoliday.subdivisions) {
         const codes = nextMandatoryHoliday.subdivisions.map((s) => s.code);
         nextMandatoryHoliday.subdivision = subdivisions
@@ -87,7 +87,7 @@ const SearchInput = ({
       mandatoryHolidayHandler(nextMandatoryHoliday);
     }
 
-    if (nextOptionalHoliday) {
+    if (nextOptionalHoliday && optionalHolidayHandler) {
       if (nextOptionalHoliday.subdivisions) {
         const codes = nextOptionalHoliday.subdivisions.map((s) => s.code);
         nextOptionalHoliday.subdivision = subdivisions
@@ -135,6 +135,13 @@ const SearchInput = ({
             "& fieldset": {
               borderTopRightRadius: 0,
               borderBottomRightRadius: 0,
+            },
+          }}
+          inputProps={{
+            ...params.inputProps,
+            style: {
+              ...params.inputProps.style,
+              textAlign: "center",
             },
           }}
           InputProps={{
