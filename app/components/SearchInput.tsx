@@ -142,6 +142,7 @@ const SearchInput = ({
             style: {
               ...params.inputProps.style,
               textAlign: "center",
+              paddingRight: "40px",
             },
           }}
           InputProps={{
@@ -149,7 +150,7 @@ const SearchInput = ({
             sx: {
               fontSize: !isDesktop ? "3rem" : 50,
               "& .MuiAutocomplete-endAdornment": {
-                top: `calc(50% - ${!isDesktop ? "2rem" : "25px"})`,
+                top: `calc(50% - ${!isDesktop ? "2rem" : "35px"})`,
                 "& svg": {
                   fontSize: !isDesktop ? "3rem" : 50,
                 },
