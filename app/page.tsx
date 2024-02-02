@@ -1,10 +1,10 @@
 import styles from "./page.module.css";
-import Section from "./pages/Section";
+import MainSection from "./pages/MainSection";
 
 export default function Home() {
   return (
     <main className={styles.main}>
-      <Section />
+      <MainSection />
     </main>
   );
 }

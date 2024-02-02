@@ -12,12 +12,18 @@ const roboto = Roboto({
 
 const theme = createTheme({
   palette: {
+    text: {
+      primary: "#432C23",
+    },
     primary: {
-      main: "#0D1F2D",
+      main: "#432C23",
       contrastText: "#FFFFFF",
     },
   },
   typography: {
+    allVariants: {
+      color: "#432C23",
+    },
     fontFamily: roboto.style.fontFamily,
   },
 });

@@ -2,7 +2,6 @@
 
 import {
   Autocomplete,
-  Divider,
   Grid,
   TextField,
   Typography,
@@ -10,6 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 import countryData from "country-data";
+import { DateTime as dt } from "luxon";
 import { SyntheticEvent, useEffect, useState } from "react";
 import {
   Holiday,
@@ -17,9 +17,8 @@ import {
   SubdivisionResponse,
 } from "../../models/models";
 import COUNTRIES from "../countries.json";
-import { DateTime as dt } from "luxon";
 
-const Section = () => {
+const MainSection = () => {
   const [options] = useState(Object.keys(COUNTRIES).flatMap((v) => v));
   const [code, setCode] = useState<string | null>(null);
   const [value, setValue] = useState<string | null>(null);
@@ -49,7 +48,7 @@ const Section = () => {
       })
       .catch();
   }, [options]);
-  // console.log("subs", subdivisions);
+
   const getFormattedDate = (date: Date): string =>
     `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 
@@ -78,12 +77,10 @@ const Section = () => {
 
     if (nextMandatoryHoliday) {
       if (nextMandatoryHoliday.subdivisions) {
+        const codes = nextMandatoryHoliday.subdivisions.map((s) => s.code);
         nextMandatoryHoliday.subdivision = subdivisions
-          .filter(
-            (sub) =>
-              !!nextMandatoryHoliday.subdivisions.find(
-                (s) => s.code === sub.code
-              )
+          .filter((sub) =>
+            sub.children.find((child) => codes.includes(child.code))
           )
           .map((el) => el.name[0]);
       }
@@ -93,7 +90,6 @@ const Section = () => {
     if (nextOptionalHoliday) {
       if (nextOptionalHoliday.subdivisions) {
         const codes = nextOptionalHoliday.subdivisions.map((s) => s.code);
-        debugger;
         nextOptionalHoliday.subdivision = subdivisions
           .filter((sub) =>
             sub.children.find((child) => codes.includes(child.code))
@@ -123,13 +119,17 @@ const Section = () => {
     dt.fromISO(date).toLocaleString(dt.DATE_MED_WITH_WEEKDAY);
 
   return (
-    <Grid container height={`calc(100vh - ${!isDesktop ? "4rem" : "12rem"})`}>
-      <Grid item xs={12} display="flex" alignItems="center">
+    <Grid
+      container
+      display="flex"
+      justifyContent="center"
+      height={`calc(100vh - ${!isDesktop ? "4rem" : "12rem"})`}
+    >
+      <Grid item xs={12} sm={8} lg={6} display="flex" alignItems="center">
         <Grid container gap={2} textAlign="center">
           <Grid
             item
             xs={12}
-            my={!isDesktop ? 2 : 15}
             display="flex"
             justifyContent="center"
             alignItems="center"
@@ -181,9 +181,15 @@ const Section = () => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6} my={3}>
-            <Divider color="#000000" />
-          </Grid>
+          <Grid
+            item
+            xs={10}
+            sx={{
+              margin: "0 auto 3rem",
+              height: "45px",
+              boxShadow: "0 20px 20px -20px #432C23",
+            }}
+          />
           {nextMandatoryHoliday && (
             <Grid
               item
@@ -251,4 +257,4 @@ const Section = () => {
   );
 };
 
-export default Section;
+export default MainSection;
