@@ -9,9 +9,14 @@ export enum HolidayType {
   EndOfLessons,
 }
 
-type HolidayName = {
+type Name = {
   language: string;
   text: string;
+};
+
+type ShortSubdivision = {
+  code: string;
+  shortName: string;
 };
 
 export interface HolidayResponse {
@@ -20,6 +25,21 @@ export interface HolidayResponse {
   endDate: string;
   type: HolidayType;
   quality: "Mandatory" | "Optional";
-  name: HolidayName[];
+  name: Name[];
   nationwide: boolean;
+  subdivisions: ShortSubdivision[];
+}
+
+export type Holiday = HolidayResponse & {
+  subdivision?: Name[];
+};
+
+export interface SubdivisionResponse {
+  code: string;
+  isoCode: string;
+  shortName: string;
+  category: Name[];
+  name: Name[];
+  children: SubdivisionResponse[];
+  officialLanguages: string[];
 }
