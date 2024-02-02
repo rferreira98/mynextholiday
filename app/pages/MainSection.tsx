@@ -1,10 +1,10 @@
 "use client";
 
 import { Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { DateTime as dt } from "luxon";
 import { useState } from "react";
 import { Holiday } from "../../models/models";
 import Divider from "../components/Divider";
+import HolidayText from "../components/HolidayText";
 import SearchInput from "../components/SearchInput";
 
 const MainSection = () => {
@@ -16,17 +16,6 @@ const MainSection = () => {
   //breakpoints
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
-
-  const getSubdivisionsText = (holiday: Holiday): string | undefined => {
-    const string = holiday.subdivision?.reduce(
-      (accumulator, currentValue) => accumulator + `${currentValue.text}, `,
-      ""
-    );
-    return string?.substring(0, string.length - 2);
-  };
-
-  const getHumanReadableDate = (date: string): string =>
-    dt.fromISO(date).toLocaleString(dt.DATE_MED_WITH_WEEKDAY);
 
   return (
     <Grid
@@ -60,11 +49,7 @@ const MainSection = () => {
               justifyContent="center"
               alignItems="center"
             >
-              <Typography variant="h4">
-                {`${
-                  nextMandatoryHoliday.name[0].text
-                } on ${getHumanReadableDate(nextMandatoryHoliday.startDate)}`}
-              </Typography>
+              <HolidayText holiday={nextMandatoryHoliday} isOptional={false} />
             </Grid>
           )}
           {nextOptionalHoliday && (
@@ -76,27 +61,7 @@ const MainSection = () => {
               alignItems="center"
               flexDirection="column"
             >
-              <Typography
-                variant="h5"
-                mt={5}
-                fontWeight="bold"
-                {...(!isDesktop && { fontSize: "1.5rem" })}
-              >
-                Next optional holiday
-              </Typography>
-              <Typography variant="h5" fontSize="1.25rem">
-                {`${nextOptionalHoliday.name[0].text} on ${getHumanReadableDate(
-                  nextOptionalHoliday.startDate
-                )}`}
-              </Typography>
-              <Typography
-                variant="body1"
-                mt={1}
-                fontWeight={500}
-                color="#363032"
-              >
-                {`(${getSubdivisionsText(nextOptionalHoliday) ?? ""})`}
-              </Typography>
+              <HolidayText holiday={nextOptionalHoliday} isOptional />
             </Grid>
           )}
 
