@@ -1,9 +1,11 @@
+import { Holiday, HolidayResponse, SubdivisionResponse } from "@/models/models";
 import {
   Autocomplete,
   TextField,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import countryData from "country-data";
 import {
   Dispatch,
   SetStateAction,
@@ -12,8 +14,7 @@ import {
   useState,
 } from "react";
 import COUNTRIES from "../countries.json";
-import countryData from "country-data";
-import { Holiday, HolidayResponse, SubdivisionResponse } from "@/models/models";
+import { SUPPORTED_COUNTRIES } from "../utils/constants";
 
 interface SearchInputProps {
   mandatoryHolidayHandler?: Dispatch<SetStateAction<Holiday | null>>;
@@ -25,11 +26,16 @@ const SearchInput = ({
   optionalHolidayHandler,
 }: SearchInputProps) => {
   const [code, setCode] = useState<string | null>(null);
-  const [value, setValue] = useState<string | null>("");
+  const [value, setValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string | undefined>("");
-  const [options] = useState(Object.keys(COUNTRIES).flatMap((v) => v));
+  const [options] = useState(
+    Object.keys(COUNTRIES)
+      .flatMap((v) => v)
+      .filter((country) => SUPPORTED_COUNTRIES.includes(country))
+  );
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
+  const [didFirstLoad, setFirstLoad] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -42,6 +48,7 @@ const SearchInput = ({
           if (options.includes(countryData.countries[info.country].name)) {
             setCode(info.country);
             setValue(countryData.countries[info.country].name);
+            setFirstLoad(true);
           }
         }
       })
@@ -52,25 +59,29 @@ const SearchInput = ({
   const getFormattedDate = (date: Date): string =>
     `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 
-  const findHoliday = async () => {
+  const findHoliday = async (val?: string) => {
     const today = new Date();
     const lastDay = new Date(today.getFullYear(), 11, 31);
-
+    const contextualCode = val
+      ? countryData.lookup.countries({ name: val })[0].alpha2
+      : code;
     const startDate = getFormattedDate(today);
     const endDate = getFormattedDate(lastDay);
     const response = await fetch(
-      `https://openholidaysapi.org/PublicHolidays?countryIsoCode=${code}&languageIsoCode=${code}&validFrom=${startDate}&validTo=${endDate}`
+      `https://openholidaysapi.org/PublicHolidays?countryIsoCode=${contextualCode}&languageIsoCode=${contextualCode}&validFrom=${startDate}&validTo=${endDate}`
     );
     const nextHolidays: HolidayResponse[] = await response.json();
     const nextMandatoryHoliday: Holiday | undefined = nextHolidays.find(
-      (holiday) => holiday.quality === "Mandatory"
+      (holiday) => (holiday.quality ? holiday.quality === "Mandatory" : true)
     );
     const nextOptionalHoliday: Holiday | undefined = nextHolidays.find(
-      (holiday) => holiday.quality === "Optional"
+      (holiday) =>
+        (holiday.quality ? holiday.quality === "Optional" : true) &&
+        holiday.id !== nextMandatoryHoliday?.id
     );
 
     const subdivisionsResponse = await fetch(
-      `https://openholidaysapi.org/Subdivisions?countryIsoCode=${code}&languageIsoCode=${code}`
+      `https://openholidaysapi.org/Subdivisions?countryIsoCode=${contextualCode}&languageIsoCode=${contextualCode}`
     );
     const subdivisions: SubdivisionResponse[] =
       await subdivisionsResponse.json();
@@ -98,20 +109,20 @@ const SearchInput = ({
       }
       optionalHolidayHandler(nextOptionalHoliday);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
   useEffect(() => {
     if (value === inputValue) {
-      findHoliday();
+      didFirstLoad ? findHoliday(inputValue) : findHoliday();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, inputValue]);
+  }, [inputValue]);
 
   return (
     <Autocomplete
       disablePortal
       id="combo-box-demo"
-      freeSolo
       value={value}
       onChange={(
         _event: SyntheticEvent<Element, Event>,
@@ -142,7 +153,7 @@ const SearchInput = ({
             style: {
               ...params.inputProps.style,
               textAlign: "center",
-              paddingRight: "40px",
+              paddingRight: "35px",
             },
           }}
           InputProps={{
@@ -152,7 +163,7 @@ const SearchInput = ({
               "& .MuiAutocomplete-endAdornment": {
                 top: `calc(50% - ${!isDesktop ? "2rem" : "35px"})`,
                 "& svg": {
-                  fontSize: !isDesktop ? "3rem" : 50,
+                  fontSize: !isDesktop ? "2rem" : 40,
                 },
               },
             },
