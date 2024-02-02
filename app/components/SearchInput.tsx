@@ -13,7 +13,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import COUNTRIES from "../countries.json";
+import COUNTRIES from "../utils/countries.json";
 import { SUPPORTED_COUNTRIES } from "../utils/constants";
 
 interface SearchInputProps {
@@ -91,7 +91,9 @@ const SearchInput = ({
         const codes = nextMandatoryHoliday.subdivisions.map((s) => s.code);
         nextMandatoryHoliday.subdivision = subdivisions
           .filter((sub) =>
-            sub.children.find((child) => codes.includes(child.code))
+            sub.children
+              ? sub.children.find((child) => codes.includes(child.code))
+              : codes.includes(sub.code)
           )
           .map((el) => el.name[0]);
       }
@@ -103,7 +105,9 @@ const SearchInput = ({
         const codes = nextOptionalHoliday.subdivisions.map((s) => s.code);
         nextOptionalHoliday.subdivision = subdivisions
           .filter((sub) =>
-            sub.children.find((child) => codes.includes(child.code))
+            sub.children
+              ? sub.children.find((child) => codes.includes(child.code))
+              : codes.includes(sub.code)
           )
           .map((el) => el.name[0]);
       }

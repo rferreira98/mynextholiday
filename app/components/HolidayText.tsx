@@ -22,7 +22,14 @@ const HolidayText = ({ holiday, isOptional = false }: HolidayTextProps) => {
     dt.fromISO(date).toLocaleString(dt.DATE_MED_WITH_WEEKDAY);
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       {isOptional && (
         <Typography
           variant="h5"
@@ -46,7 +53,7 @@ const HolidayText = ({ holiday, isOptional = false }: HolidayTextProps) => {
           {`(${getSubdivisionsText(holiday) ?? ""})`}
         </Typography>
       )}
-    </>
+    </div>
   );
 };
 
