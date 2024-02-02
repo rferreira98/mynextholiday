@@ -209,15 +209,14 @@ const Section = () => {
               flexDirection="column"
             >
               <Typography
-                variant="h3"
+                variant="h5"
                 mt={5}
-                mb={2}
                 fontWeight="bold"
-                {...(!isDesktop && { fontSize: "2rem" })}
+                {...(!isDesktop && { fontSize: "1.5rem" })}
               >
                 Next optional holiday
               </Typography>
-              <Typography variant="h5">
+              <Typography variant="h5" fontSize="1.25rem">
                 {`${nextOptionalHoliday.name[0].text} on ${getHumanReadableDate(
                   nextOptionalHoliday.startDate
                 )}`}
