@@ -2,13 +2,11 @@
 "use client";
 import { createTheme } from "@mui/material/styles";
 
-import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 
-const roboto = Roboto({
-  weight: ["300", "400", "500", "700"],
-  subsets: ["latin"],
-  display: "swap",
-});
+
+const inter = Inter({ subsets: ["latin"] });
+
 
 const theme = createTheme({
   palette: {
@@ -24,7 +22,7 @@ const theme = createTheme({
     allVariants: {
       color: "#432C23",
     },
-    fontFamily: roboto.style.fontFamily,
+    fontFamily: inter.style.fontFamily
   },
 });
 
