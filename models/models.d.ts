@@ -24,7 +24,7 @@ export interface HolidayResponse {
   startDate: string;
   endDate: string;
   type: HolidayType;
-  quality: "Mandatory" | "Optional";
+  quality?: "Mandatory" | "Optional";
   name: Name[];
   nationwide: boolean;
   subdivisions: ShortSubdivision[];
