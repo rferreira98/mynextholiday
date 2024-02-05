@@ -25,3 +25,5 @@ export const SUPPORTED_COUNTRIES = [
   "Slovenia",
   "Switzerland",
 ];
+
+export const DEFAULT_ERROR_MESSAGE = "There's no more holidays this year.";

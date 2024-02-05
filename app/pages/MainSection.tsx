@@ -1,10 +1,11 @@
 "use client";
 
-import { Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Grid, useMediaQuery, useTheme } from "@mui/material";
 import { useState } from "react";
 import { Holiday } from "../../models/models";
 import Divider from "../components/Divider";
 import HolidayText from "../components/HolidayText";
+import MessageText from "../components/MessageText";
 import SearchInput from "../components/SearchInput";
 
 const MainSection = () => {
@@ -73,9 +74,7 @@ const MainSection = () => {
               justifyContent="center"
               alignItems="center"
             >
-              <Typography variant="h4">
-                There&apos;s no more holidays this year.
-              </Typography>
+              <MessageText />
             </Grid>
           )}
         </Grid>
